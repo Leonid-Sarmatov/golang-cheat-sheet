@@ -17,6 +17,11 @@ import (
     "strconv"
 )
 
+// Функция, которая реализует пошаговую многопоточную обработку данных
+func SumValuesPipeline(filename string) int {
+    return Sum(Filter(NumbersGen(filename)))
+}
+
 // Функция возвращает канал только для чтения
 func NumbersGen(filename string) <-chan int {
 	// Создаем канал
@@ -56,5 +61,28 @@ func NumbersGen(filename string) <-chan int {
     }()
 	
 	// Возвращаем канал
+    return res
+}
+
+// Принимаем канал с числами, возвращаем канал с четными числами
+func Filter(in <-chan int) <-chan int {
+    res := make(chan int)
+    go func() {
+        defer close(res)
+        for val := range in {
+            if val % 2 == 0 {
+                res <- val
+            }
+        }
+    }()
+    return res
+}
+
+// Функция для подсчета суммы четных чисел. Принимаем канал, возвращаем число
+func Sum(in <-chan int) int {
+    res := 0
+    for val := range in {
+        res += val
+    }
     return res
 }
