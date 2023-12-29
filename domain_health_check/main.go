@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/urfave/cli/v2"
 	"fmt"
+	"os"
+	"log"
 )
 
 func main() {
@@ -32,5 +34,10 @@ func main() {
 			fmt.Println(status)
 			return nil
 		},
+	}
+
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Falal(err)
 	}
 }
